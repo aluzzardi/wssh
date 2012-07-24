@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-from gevent import monkey; monkey.patch_all()
+from gevent import monkey
+monkey.patch_all()
+
 from flask import Flask, request, abort, render_template
 from werkzeug.exceptions import BadRequest
 import gevent
@@ -9,9 +11,11 @@ import wssh
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @app.route('/wssh/<hostname>/<username>')
 def connect(hostname, username):
@@ -31,7 +35,7 @@ def connect(hostname, username):
     proxy = wssh.WSSHProxy(request.environ['wsgi.websocket'])
     try:
         proxy.open(
-            hostname=hostname,
+            hostnam3e=hostname,
             username=username,
             password=request.args.get('password'),
             private_key=request.args.get('private_key'),
@@ -52,6 +56,7 @@ def connect(hostname, username):
     # throw a 500 at our websocket client
     request.environ['wsgi.websocket'].close()
     return str()
+
 
 if __name__ == '__main__':
     import argparse

@@ -27,7 +27,6 @@ except ImportError:
 from StringIO import StringIO
 
 
-
 class WSSHProxy(object):
     """ WebSocket to SSH Proxy Server """
 

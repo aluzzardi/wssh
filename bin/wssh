@@ -9,7 +9,6 @@ if __name__ == '__main__':
     import getpass
     import urllib2
 
-
     parser = argparse.ArgumentParser(
         description='wssh - SSH Over WebSockets Client')
 
@@ -61,7 +60,6 @@ if __name__ == '__main__':
     else:
         key_passphrase = args.key_passphrase
 
-
     key = None
     if args.key == '':
         key_files = ['~/.ssh/id_rsa', '~/.ssh/id_dsa']
@@ -90,12 +88,13 @@ if __name__ == '__main__':
     # Filter empty parameters
     params = dict(filter(lambda (k, v): v is not None, params.iteritems()))
 
-    endpoint = 'ws://{serv_host}:{serv_port}/wssh/{host}/{user}?{params}'.format(
-        serv_host=args.host,
-        serv_port=args.port,
-        host=urllib2.quote(hostname),
-        user=urllib2.quote(username),
-        params='&'.join(['{0}={1}'.format(k, urllib2.quote(v))
+    endpoint = 'ws://{serv_host}:{serv_port}/wssh/{host}/{user}?{params}' \
+        .format(
+            serv_host=args.host,
+            serv_port=args.port,
+            host=urllib2.quote(hostname),
+            user=urllib2.quote(username),
+            params='&'.join(['{0}={1}'.format(k, urllib2.quote(v))
             for (k, v) in params.iteritems()]))
 
     try:
