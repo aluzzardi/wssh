@@ -40,6 +40,9 @@ def index():
     # This won't return as long as the session is alive
     bridge.shell()
 
+    # Alternatively, you can run a command on the remote server
+    # bridge.execute('/bin/ls -l /')
+
     # We have to manually close the websocket and return an empty response,
     # otherwise flask will complain about not returning a response and will
     # throw a 500 at our websocket client
