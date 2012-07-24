@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     app.config['WSSH_ALLOW_SSH_AGENT'] = args.allow_agent
 
-    agent = 'wsshd/{0}'.format('0.1.0')
+    agent = 'wsshd/{0}'.format(wssh.__version__)
 
     print '{0} running on {1}:{2}'.format(agent, args.host, args.port)
 
