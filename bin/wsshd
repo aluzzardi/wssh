@@ -35,7 +35,7 @@ def connect(hostname, username):
     bridge = wssh.WSSHBridge(request.environ['wsgi.websocket'])
     try:
         bridge.open(
-            hostnam3e=hostname,
+            hostname=hostname,
             username=username,
             password=request.args.get('password'),
             private_key=request.args.get('private_key'),
