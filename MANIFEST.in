@@ -1,0 +1,2 @@
+recursive-include wssh/static/*
+recursive-include wssh/templates/*

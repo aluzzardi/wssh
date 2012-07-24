@@ -1,0 +1,106 @@
+#!/usr/bin/env python
+
+if __name__ == '__main__':
+    from wssh import client
+
+    import os
+    import sys
+    import argparse
+    import getpass
+    import urllib2
+
+
+    parser = argparse.ArgumentParser(
+        description='wssh - SSH Over WebSockets Client')
+
+    parser.add_argument('--host', '-H',
+        help='WSSH server host (default: 127.0.0.1)',
+        default='127.0.0.1')
+
+    parser.add_argument('--port', '-P',
+        help='WSSH server port (default: 5000)',
+        type=int,
+        default=5000)
+
+    parser.add_argument('--password', '-p',
+        nargs='?',
+        const='',
+        help='Password-based authentication. ' \
+            'If no password is provided you will be prompted for one')
+
+    parser.add_argument('--key', '-k',
+        nargs='?',
+        const='',
+        help='Private key authentication. ' \
+            'Selects a file from which the private key ' \
+            'for RSA or DSA authentication is read.  ' \
+            'The default is ~/.ssh/id_rsa and ~/.ssh/id_dsa.')
+
+    parser.add_argument('--key-passphrase', '-K',
+            nargs='?',
+            const='',
+            help='Provide a passphrase for encrypted private key files.')
+
+    parser.add_argument('destination',
+        help='[user@]hostname')
+
+    args = parser.parse_args()
+
+    if '@' in args.destination:
+        (username, hostname) = args.destination.split('@', 1)
+    else:
+        (username, hostname) = (getpass.getuser(), args.destination)
+
+    if args.password == '':
+        password = getpass.getpass('Password: ')
+    else:
+        password = args.password
+
+    if args.key_passphrase == '':
+        key_passphrase = getpass.getpass('Enter passphrase for private key: ')
+    else:
+        key_passphrase = args.key_passphrase
+
+
+    key = None
+    if args.key == '':
+        key_files = ['~/.ssh/id_rsa', '~/.ssh/id_dsa']
+        for path in key_files:
+            path = os.path.expanduser(path)
+            if os.path.exists(path):
+                key = file(path).read()
+                break
+        if key is None:
+            print >> sys.stderr, 'Error: Unable to locate identity file {0}' \
+                .format(' or '.join(key_files))
+            sys.exit(1)
+    elif args.key is not None:
+        if not os.path.exists(args.key):
+            print >> sys.stderr, 'Error: Identity file "{0}" does not exist' \
+                .format(args.key)
+            sys.exit(1)
+        key = file(args.key).read()
+
+    params = {
+        'password': password,
+        'private_key': key,
+        'key_passphrase': key_passphrase
+    }
+
+    # Filter empty parameters
+    params = dict(filter(lambda (k, v): v is not None, params.iteritems()))
+
+    endpoint = 'ws://{serv_host}:{serv_port}/wssh/{host}/{user}?{params}'.format(
+        serv_host=args.host,
+        serv_port=args.port,
+        host=urllib2.quote(hostname),
+        user=urllib2.quote(username),
+        params='&'.join(['{0}={1}'.format(k, urllib2.quote(v))
+            for (k, v) in params.iteritems()]))
+
+    try:
+        client.invoke_shell(endpoint)
+    except client.ConnectionError as e:
+        print >>sys.stderr, 'wssh: {0}'.format(e.message or 'Connection error')
+    else:
+        print >>sys.stderr, 'Connection to {0} closed.'.format(hostname)

@@ -1,0 +1,99 @@
+#!/usr/bin/env python
+
+from gevent import monkey; monkey.patch_all()
+from flask import Flask, request, abort, render_template
+from werkzeug.exceptions import BadRequest
+import gevent
+import wssh
+
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/wssh/<hostname>/<username>')
+def connect(hostname, username):
+    app.logger.debug('{remote} -> {username}@{hostname}: {command}'.format(
+            remote=request.remote_addr,
+            username=username,
+            hostname=hostname,
+            command=request.args['run'] if 'run' in request.args else
+                '[interactive shell]'
+        ))
+
+    # Abort if this is not a websocket request
+    if not request.environ.get('wsgi.websocket'):
+        app.logger.error('Abort: Request is not WebSocket upgradable')
+        raise BadRequest()
+
+    proxy = wssh.WSSHProxy(request.environ['wsgi.websocket'])
+    try:
+        proxy.open(
+            hostname=hostname,
+            username=username,
+            password=request.args.get('password'),
+            private_key=request.args.get('private_key'),
+            key_passphrase=request.args.get('key_passphrase'),
+            allow_agent=app.config.get('WSSH_ALLOW_SSH_AGENT', False))
+    except Exception as e:
+        app.logger.exception('Error while connecting to {0}: {1}'.format(
+            hostname, e.message))
+        request.environ['wsgi.websocket'].close()
+        return str()
+    if 'run' in request.args:
+        proxy.execute(request.args)
+    else:
+        proxy.shell()
+
+    # We have to manually close the websocket and return an empty response,
+    # otherwise flask will complain about not returning a response and will
+    # throw a 500 at our websocket client
+    request.environ['wsgi.websocket'].close()
+    return str()
+
+if __name__ == '__main__':
+    import argparse
+    from gevent.pywsgi import WSGIServer
+    from geventwebsocket import WebSocketHandler
+    from jinja2 import FileSystemLoader
+    import os
+
+    root_path = os.path.dirname(wssh.__file__)
+    app.jinja_loader = FileSystemLoader(os.path.join(root_path, 'templates'))
+    app.static_folder = os.path.join(root_path, 'static')
+
+    parser = argparse.ArgumentParser(
+        description='wsshd - SSH Over WebSockets Daemon')
+
+    parser.add_argument('--port', '-p',
+        default=5000,
+        help='Port to bind (default: 5000)')
+
+    parser.add_argument('--host', '-H',
+        default='0.0.0.0',
+        help='Host to listen to (default: 0.0.0.0)')
+
+    parser.add_argument('--allow-agent', '-A',
+        action='store_true',
+        default=False,
+        help='Allow the use of the local (where wsshd is running) ' \
+            'ssh-agent to authenticate. Dangerous.')
+
+    args = parser.parse_args()
+
+    app.config['WSSH_ALLOW_SSH_AGENT'] = args.allow_agent
+
+    agent = 'wsshd/{0}'.format('0.1.0')
+
+    print '{0} running on {1}:{2}'.format(agent, args.host, args.port)
+
+    app.debug = True
+    http_server = WSGIServer((args.host, args.port), app,
+        log=None,
+        handler_class=WebSocketHandler)
+    try:
+        http_server.serve_forever()
+    except KeyboardInterrupt:
+        pass
