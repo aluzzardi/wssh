@@ -27,11 +27,11 @@ except ImportError:
 from StringIO import StringIO
 
 
-class WSSHProxy(object):
-    """ WebSocket to SSH Proxy Server """
+class WSSHBridge(object):
+    """ WebSocket to SSH Bridge Server """
 
     def __init__(self, websocket):
-        """ Initialize a WSSH Proxy
+        """ Initialize a WSSH Bridge
 
         The websocket must be the one created by gevent-websocket
         """
@@ -134,8 +134,8 @@ class WSSHProxy(object):
         finally:
             self.close()
 
-    def _proxy(self, channel):
-        """ Full-duplex proxy between a websocket and a SSH channel """
+    def _bridge(self, channel):
+        """ Full-duplex bridge between a websocket and a SSH channel """
         channel.setblocking(False)
         channel.settimeout(0.0)
         self._tasks = [
@@ -145,7 +145,7 @@ class WSSHProxy(object):
         gevent.joinall(self._tasks)
 
     def close(self):
-        """ Terminate a proxy session """
+        """ Terminate a bridge session """
         gevent.killall(self._tasks, block=True)
         self._tasks = []
         self._ssh.close()
@@ -163,7 +163,7 @@ class WSSHProxy(object):
         channel = transport.open_session()
         channel.get_pty(term)
         channel.exec_command(command)
-        self._proxy(channel)
+        self._bridge(channel)
         channel.close()
 
     def shell(self, term='xterm'):
@@ -176,5 +176,5 @@ class WSSHProxy(object):
         prior to starting the session.
         """
         channel = self._ssh.invoke_shell(term)
-        self._proxy(channel)
+        self._bridge(channel)
         channel.close()

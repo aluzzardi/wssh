@@ -32,9 +32,9 @@ def connect(hostname, username):
         app.logger.error('Abort: Request is not WebSocket upgradable')
         raise BadRequest()
 
-    proxy = wssh.WSSHProxy(request.environ['wsgi.websocket'])
+    bridge = wssh.WSSHBridge(request.environ['wsgi.websocket'])
     try:
-        proxy.open(
+        bridge.open(
             hostnam3e=hostname,
             username=username,
             password=request.args.get('password'),
@@ -47,9 +47,9 @@ def connect(hostname, username):
         request.environ['wsgi.websocket'].close()
         return str()
     if 'run' in request.args:
-        proxy.execute(request.args)
+        bridge.execute(request.args)
     else:
-        proxy.shell()
+        bridge.shell()
 
     # We have to manually close the websocket and return an empty response,
     # otherwise flask will complain about not returning a response and will
