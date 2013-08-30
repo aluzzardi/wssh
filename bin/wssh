@@ -40,6 +40,11 @@ if __name__ == '__main__':
             const='',
             help='Provide a passphrase for encrypted private key files.')
 
+    parser.add_argument('--ssh-port', '-s',
+            type=int,
+            default=22,
+            help='Ssh to server host"s port')
+
     parser.add_argument('destination',
         help='[user@]hostname')
 
@@ -81,6 +86,7 @@ if __name__ == '__main__':
 
     params = {
         'password': password,
+        'port': str(args.ssh_port),
         'private_key': key,
         'key_passphrase': key_passphrase
     }

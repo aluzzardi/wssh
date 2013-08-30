@@ -49,9 +49,11 @@ WSSHClient.prototype._generateEndpoint = function(options) {
         '/wssh/' + encodeURIComponent(options.hostname) + '/' +
         encodeURIComponent(options.username);
     if (options.authentication_method == 'password') {
-        endpoint += '?password=' + encodeURIComponent(options.password);
+        endpoint += '?password=' + encodeURIComponent(options.password) +
+        '&port=' + encodeURIComponent(options.port);
     } else if (options.authentication_method == 'private_key') {
-        endpoint += '?private_key=' + encodeURIComponent(options.private_key);
+        endpoint += '?private_key=' + encodeURIComponent(options.private_key) +
+        '&port=' + encodeURIComponent(options.port);
         if (options.key_passphrase !== undefined)
             endpoint += '&key_passphrase=' + encodeURIComponent(
                 options.key_passphrase);

@@ -38,6 +38,7 @@ def connect(hostname, username):
             hostname=hostname,
             username=username,
             password=request.args.get('password'),
+            port=int(request.args.get('port')),
             private_key=request.args.get('private_key'),
             key_passphrase=request.args.get('key_passphrase'),
             allow_agent=app.config.get('WSSH_ALLOW_SSH_AGENT', False))
