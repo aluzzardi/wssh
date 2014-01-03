@@ -62,7 +62,7 @@ def connect(hostname, username):
 if __name__ == '__main__':
     import argparse
     from gevent.pywsgi import WSGIServer
-    from geventwebsocket import WebSocketHandler
+    from geventwebsocket.handler import WebSocketHandler
     from jinja2 import FileSystemLoader
     import os
 
