@@ -6,6 +6,12 @@
 
         <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet" />
         <link href="{{url_for('static', filename='style.css')}}" rel="stylesheet" />
+        <script type="application/javascript" src="{{url_for('static', filename='jquery.min.js')}}">
+        </script>
+        <script type="application/javascript" src="{{url_for('static', filename='term.js')}}">
+        </script>
+        <script type="application/javascript" src="{{url_for('static', filename='wssh.js')}}">
+        </script>
     </head>
 
     <body>
@@ -122,12 +128,6 @@
 
         </div>
 
-        <script type="application/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js">
-        </script>
-        <script type="application/javascript" src="https://raw.github.com/chjj/tty.js/36717df8e96f35f4e2bd3fd585e9361f1439fc7e/static/term.js">
-        </script>
-        <script type="application/javascript" src="{{url_for('static', filename='wssh.js')}}">
-        </script>
         <script type="application/javascript">
             function openTerminal(options) {
                 var client = new WSSHClient();
