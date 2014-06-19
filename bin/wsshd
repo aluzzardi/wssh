@@ -74,6 +74,7 @@ if __name__ == '__main__':
         description='wsshd - SSH Over WebSockets Daemon')
 
     parser.add_argument('--port', '-p',
+        type=int,
         default=5000,
         help='Port to bind (default: 5000)')
 
