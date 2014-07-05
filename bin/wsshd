@@ -48,7 +48,7 @@ def connect(hostname, username):
         request.environ['wsgi.websocket'].close()
         return str()
     if 'run' in request.args:
-        bridge.execute(request.args)
+        bridge.execute(request.args.get('run'))
     else:
         bridge.shell()
 
