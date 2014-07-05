@@ -48,6 +48,10 @@ if __name__ == '__main__':
     parser.add_argument('destination',
         help='[user@]hostname')
 
+    parser.add_argument('command',
+        nargs='*',
+        help='optional command to be executed')
+
     args = parser.parse_args()
 
     if '@' in args.destination:
@@ -88,7 +92,8 @@ if __name__ == '__main__':
         'password': password,
         'port': str(args.ssh_port),
         'private_key': key,
-        'key_passphrase': key_passphrase
+        'key_passphrase': key_passphrase,
+        'run': ' '.join(args.command) if args.command else None,
     }
 
     # Filter empty parameters
