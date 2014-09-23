@@ -58,6 +58,10 @@ WSSHClient.prototype._generateEndpoint = function(options) {
             endpoint += '&key_passphrase=' + encodeURIComponent(
                 options.key_passphrase);
     }
+    if (options.command != "") {
+        endpoint += '&run=' + encodeURIComponent(
+            options.command);
+    }
     return endpoint;
 };
 

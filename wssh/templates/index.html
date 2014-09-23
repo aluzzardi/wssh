@@ -108,6 +108,19 @@
                         </div>
                     </div>
 
+                    <div class="control-group">
+                        <label class="control-label">
+                            Command
+                        </label>
+                        <div class="controls">
+                            <input type="text" id="command" class="input-large" />
+                            <p class="help-block">
+                                Enter command to be executed or
+                                empty for interactive.
+                            </p>
+                        </div>
+                    </div>
+
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">
                             Connect
@@ -196,6 +209,7 @@
                     var username = $('input:text#username');
                     var hostname = $('input:text#hostname');
                     var portnumber = $('input:text#portnumber');
+                    var command = $('input:text#command');
 
                     var authentication = $(
                         'input[name=authentication_method]:checked',
@@ -203,6 +217,7 @@
                     var options = {
                         username: username.val(),
                         hostname: hostname.val(),
+                        command: command.val(),
                         authentication_method: authentication
                     };
 
