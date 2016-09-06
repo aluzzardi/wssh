@@ -55,7 +55,7 @@ if __name__ == '__main__':
     from geventwebsocket.handler import WebSocketHandler
 
     app.debug = True
-    http_server = WSGIServer(('localhost', 5002), app,
+    http_server = WSGIServer(('localhost', 5000), app,
         log=None,
         handler_class=WebSocketHandler)
     print 'Server running on ws://localhost:5000/remote'
