@@ -52,10 +52,10 @@ def index():
 
 if __name__ == '__main__':
     from gevent.pywsgi import WSGIServer
-    from geventwebsocket import WebSocketHandler
+    from geventwebsocket.handler import WebSocketHandler
 
     app.debug = True
-    http_server = WSGIServer(('localhost', 5000), app,
+    http_server = WSGIServer(('localhost', 5002), app,
         log=None,
         handler_class=WebSocketHandler)
     print 'Server running on ws://localhost:5000/remote'
